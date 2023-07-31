@@ -1,5 +1,10 @@
-Pizzaria version of the classic CS [Producer Consumer Problem](https://en.wikipedia.org/wiki/Producer%E2%80%93consumer_problems)
+Pizzeria version of the classic CS [Producer Consumer Problem](https://en.wikipedia.org/wiki/Producer%E2%80%93consumer_problems)
 
+
+
+### GENERAL NOTES
+- Repo features some channel work
+- Golden rule of channels -- if you open one, make sure you close it!
 
 
 
