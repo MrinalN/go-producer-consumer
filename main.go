@@ -12,7 +12,7 @@ const NumberOfPizzas = 10
 
 var pizzasMade, pizzasFailed, total int
 
-// channel!
+// channels!
 type Producer struct {
 	data chan PizzaOrder
 	quit chan chan error // channel of channels of errors!
@@ -24,13 +24,18 @@ type PizzaOrder struct {
 	successs    bool
 }
 
-// func to close channel
+// Close is simply a method of closing the channel when we are done with it (i.e.
+// something is pushed to the quit channel)
 func (p *Producer) Close() error {
 	ch := make(chan error)
 	p.quit <- ch // <- operator represents the idea of passing a value from channel to a reference. Dequeing from queue and assigning value to target element.
 	return <-ch
 }
 
+// makePizza attempts to make a pizza. We generate a random number from 1-12,
+// and put in two cases where we can't make the pizza in time. Otherwise,
+// we make the pizza without issue. To make things interesting, each pizza
+// will take a different length of time to produce (some pizzas are harder than others).
 func makePizza(pizzaNumber int) *PizzaOrder {
 	// increment pizza number by 1
 	pizzaNumber++
@@ -43,7 +48,6 @@ func makePizza(pizzaNumber int) *PizzaOrder {
 		msg := ""
 		successs := false
 
-		// Select State conditionals
 		if rnd < 5 {
 			pizzasFailed++
 		} else {
@@ -79,6 +83,12 @@ func makePizza(pizzaNumber int) *PizzaOrder {
 	}
 }
 
+// pizzeria is a goroutine that runs in the background and
+// calls makePizza to try to make one order each time it iterates through
+// the for loop. It executes until it receives something on the quit
+// channel. The quit channel does not receive anything until the consumer
+// sends it (when the number of orders is greater than or equal to the
+// constant NumberOfPizzas).
 func pizzeria(pizzaMaker *Producer) {
 	// keep track of which pizza we are making
 	var i = 0
