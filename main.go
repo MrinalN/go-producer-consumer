@@ -97,6 +97,22 @@ func pizzeria(pizzaMaker *Producer) {
 	for {
 		// when running, try to make pizzas (in background)
 		currentPizza := makePizza(i)
+		if currentPizza != nil {
+			i = currentPizza.pizzaNumber
+
+			// Select State - only usable in channels - like Switch statements
+			select {
+			// tried to make pizza (sent something to data channel)
+			case pizzaMaker.data <- *currentPizza:
+
+			case quitChan := <-pizzaMaker.quit:
+
+				// close channels!
+				close(pizzaMaker.data)
+				close(quitChan)
+				return // get the fuck out of this nested loop
+			}
+		}
 
 		// Select State (conditionals)
 	}
